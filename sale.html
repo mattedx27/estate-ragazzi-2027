@@ -8,66 +8,91 @@
   :root { --bg:#fdf6e9; --ink:#17324d; --tenue:#667a8c; --linea:#eadfcb; --mare:#1b8fd6; --acqua:#12b5a6; --sole:#ffc83d; --ok:#22a06b; --no:#e5484d; --ombra:0 8px 22px rgba(23,50,77,.10); }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   [hidden] { display:none !important; }
-  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:96px; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
   button, input { font:inherit; color:inherit; }
   button:focus-visible, input:focus-visible, [role=button]:focus-visible { outline:3px solid var(--ink); outline-offset:2px; }
+  #app { height:100vh; height:100dvh; display:flex; flex-direction:column; }
 
-  .testa { position:sticky; top:0; z-index:5; background:var(--bg); padding:12px 16px 10px; box-shadow:0 6px 16px rgba(23,50,77,.08); }
+  .testa { flex:none; padding:10px 16px 8px; box-shadow:0 6px 16px rgba(23,50,77,.07); background:var(--bg); z-index:5; }
   .riga1 { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-  .testa h1 { font-size:24px; margin:0; letter-spacing:-.02em; flex:1; }
+  .testa h1 { font-size:22px; margin:0; letter-spacing:-.02em; }
   .testa a { color:var(--tenue); font-weight:700; text-decoration:none; }
-  .barra { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 8px; }
-  .pill { border:0; background:#fff; color:var(--ink); padding:9px 15px; border-radius:999px; font-weight:800; box-shadow:var(--ombra); cursor:pointer; }
+  .spazio { flex:1; }
+  .barra { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+  .pill { border:0; background:#fff; color:var(--ink); padding:8px 14px; border-radius:999px; font-weight:800; box-shadow:var(--ombra); cursor:pointer; }
   .pill[aria-pressed=true] { background:var(--ink); color:#fff; }
   .pill.sec { font-weight:600; color:var(--tenue); }
   .sep { width:1px; align-self:stretch; background:var(--linea); margin:0 4px; }
-  .riepilogo { display:flex; gap:10px; flex-wrap:wrap; }
-  .tot { background:#fff; border-radius:14px; padding:8px 14px; box-shadow:var(--ombra); font-weight:800; }
-  .tot small { display:block; font-weight:600; color:var(--tenue); font-size:12px; }
+  .riepilogo { display:flex; gap:8px; flex-wrap:wrap; }
+  .tot { background:#fff; border-radius:14px; padding:5px 12px; box-shadow:var(--ombra); font-weight:800; line-height:1.25; }
+  .tot small { display:block; font-weight:600; color:var(--tenue); font-size:11px; }
   .tot.neg b, .liberi.neg { color:var(--no); }
+  .pill-sync { padding:8px 14px; border-radius:999px; font-weight:800; font-size:14px; background:var(--ok); color:#fff; white-space:nowrap; }
+  .pill-sync.att { background:var(--sole); color:var(--ink); }
+  .pill-sync.ko { background:var(--no); }
 
-  main { max-width:1500px; margin:0 auto; padding:16px; display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:16px; align-items:start; }
-  .sala { background:#fff; border-radius:22px; box-shadow:var(--ombra); padding:14px; min-width:0; }
+  /* una sola schermata: sale a sinistra, squadre da assegnare in una colonna a destra */
+  .corpo { flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,1fr) 280px; grid-template-rows:minmax(0,1fr); gap:14px; padding:12px 16px 16px; width:100%; max-width:1800px; margin:0 auto; }
+  .sale-area { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); grid-auto-rows:minmax(0,1fr); gap:14px; min-height:0; }
+  .colonna { min-height:0; display:flex; }
+  .colonna .sala { flex:1; }
+  .sala { background:#fff; border-radius:22px; box-shadow:var(--ombra); padding:12px; min-width:0; min-height:0; display:flex; flex-direction:column; }
   .sala.bersaglio { outline:3px dashed var(--mare); background:#f0f9ff; }
-  .sala-testa { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-  .sala h2 { margin:0; font-size:18px; line-height:1.2; }
+  .sala-testa { display:flex; justify-content:space-between; align-items:center; gap:10px; flex:none; }
+  .sala h2 { margin:0; font-size:17px; line-height:1.2; }
   .posti { display:flex; align-items:center; gap:6px; color:var(--tenue); font-size:14px; font-weight:700; white-space:nowrap; }
-  .posti input { width:74px; padding:8px; border:2px solid var(--linea); border-radius:12px; font-weight:800; text-align:center; background:#fff; }
-  .gauge { display:block; width:190px; max-width:100%; margin:6px auto 0; }
-  .liberi { text-align:center; margin:0 0 6px; font-weight:800; color:var(--tenue); }
-  .vuoto { text-align:center; color:var(--tenue); font-size:14px; padding:14px 0; margin:0; border:2px dashed var(--linea); border-radius:16px; margin-top:8px; }
-  .nota { color:var(--tenue); font-size:13px; margin:8px 0 0; }
+  .posti input { width:70px; padding:6px; border:2px solid var(--linea); border-radius:12px; font-weight:800; text-align:center; background:#fff; }
+  .misura { display:flex; align-items:center; gap:10px; margin-top:4px; flex:none; }
+  .gauge { width:124px; flex:none; display:block; }
+  .mis-testo { display:flex; flex-direction:column; min-width:0; }
+  .liberi { font-size:17px; color:var(--tenue); }
+  .mis-testo small { color:var(--tenue); font-size:13px; }
+  .lista { flex:1; min-height:0; overflow-y:auto; margin-top:6px; padding-right:2px; }
+  .vuoto { text-align:center; color:var(--tenue); font-size:14px; padding:14px 6px; margin:0; border:2px dashed var(--linea); border-radius:16px; }
+  .nota { color:var(--tenue); font-size:12.5px; margin:8px 0 0; flex:none; }
+  .cucina { background:#fff7e0; }
+  .riga-cuc { display:flex; justify-content:space-between; padding:7px 4px; border-bottom:1px solid var(--linea); font-weight:700; }
+  .riga-cuc:last-of-type { border-bottom:0; }
 
-  .sq { display:flex; align-items:center; gap:8px; height:66px; padding:0 10px 0 4px; margin-top:8px; border-radius:16px; border-left:8px solid var(--c); background:#fbf7ee; }
+  /* riga di una squadra: altezza sempre uguale */
+  .sq { display:grid; grid-template-columns:34px minmax(0,1fr) auto; grid-template-rows:1fr 1fr; column-gap:6px; align-items:center; height:64px; padding:4px 10px 4px 2px; margin-top:8px; border-radius:14px; border-left:8px solid var(--c); background:#fbf7ee; }
+  .lista > .sq:first-child { margin-top:0; }
   .sq.sel { box-shadow:0 0 0 3px var(--ink); }
   .sq.fantasma { opacity:.35; }
   .sq.ghost { position:fixed; z-index:50; pointer-events:none; opacity:.95; box-shadow:0 14px 30px rgba(0,0,0,.32); margin:0; background:#fff; }
-  .maniglia { width:36px; height:52px; display:flex; align-items:center; justify-content:center; color:var(--tenue); font-size:22px; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; flex:none; }
-  .sq-corpo { flex:1; min-width:0; cursor:pointer; }
-  .sq-corpo b { display:block; font-size:17px; }
-  .sq-det { display:block; color:var(--tenue); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .sq-num { font-size:26px; font-weight:800; min-width:38px; text-align:right; }
-  .cuc { display:flex; align-items:center; gap:3px; font-size:14px; flex:none; }
-  .cuc b { min-width:16px; text-align:center; }
-  .cuc button { width:32px; height:32px; border-radius:50%; border:0; background:var(--ink); color:#fff; font-weight:800; padding:0; cursor:pointer; }
-  button.qui { width:100%; margin-top:10px; padding:12px; border:0; border-radius:14px; background:linear-gradient(135deg,var(--acqua),var(--mare)); color:#fff; font-weight:800; cursor:pointer; }
-  .riga-cuc { display:flex; justify-content:space-between; padding:8px 4px; border-bottom:1px solid var(--linea); font-weight:700; }
-  .riga-cuc:last-of-type { border-bottom:0; }
-  .cucina { background:#fff7e0; }
+  .maniglia { grid-column:1; grid-row:1 / 3; align-self:stretch; display:flex; align-items:center; justify-content:center; color:var(--tenue); font-size:22px; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; }
+  .sq-corpo { grid-column:2; grid-row:1 / 3; min-width:0; cursor:pointer; align-self:center; }
+  .sq-corpo b { display:block; font-size:16px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sq-det { display:block; color:var(--tenue); font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sq-num { grid-column:3; grid-row:1; font-size:23px; font-weight:800; text-align:right; line-height:1; align-self:end; }
+  .cuc { grid-column:3; grid-row:2; display:flex; align-items:center; gap:3px; justify-self:end; font-size:13px; color:var(--tenue); }
+  .cuc b { min-width:14px; text-align:center; color:var(--ink); }
+  .cuc button { width:28px; height:28px; border-radius:50%; border:0; background:var(--ink); color:#fff; font-weight:800; padding:0; cursor:pointer; line-height:1; }
+  .ico { flex:none; vertical-align:-3px; }
+  button.qui { flex:none; width:100%; margin-top:8px; padding:11px; border:0; border-radius:14px; background:linear-gradient(135deg,var(--acqua),var(--mare)); color:#fff; font-weight:800; cursor:pointer; }
 
-  #sync { position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:6; max-width:496px; margin:0 auto; text-align:center; font-size:16px; font-weight:800; padding:16px 14px; border-radius:18px; background:var(--ok); color:#fff; box-shadow:0 10px 26px rgba(0,0,0,.22); }
-  #sync.att { background:var(--sole); color:var(--ink); }
-  #sync.ko { background:var(--no); }
-  #toast { position:fixed; left:16px; right:16px; bottom:calc(92px + env(safe-area-inset-bottom)); z-index:12; max-width:488px; margin:0 auto; background:var(--ink); color:#fff; padding:14px; border-radius:16px; text-align:center; font-weight:700; }
+  #toast { position:fixed; left:16px; right:16px; bottom:18px; z-index:60; max-width:488px; margin:0 auto; background:var(--ink); color:#fff; padding:14px; border-radius:16px; text-align:center; font-weight:700; }
   .centro { max-width:420px; margin:60px auto; padding:0 16px; }
   .centro input { width:100%; padding:15px; border:2px solid var(--linea); border-radius:16px; margin:8px 0 12px; font-size:17px; }
   .centro button { width:100%; padding:16px; border:0; border-radius:16px; background:var(--ink); color:#fff; font-weight:800; }
   .errore { color:var(--no); font-weight:700; }
+
+  /* schermi stretti: si torna a una colonna che scorre, con le squadre da assegnare in cima */
+  @media (max-width: 900px) {
+    html, body { height:auto; }
+    #app { height:auto; display:block; }
+    .testa { position:sticky; top:0; }
+    .corpo { display:flex; flex-direction:column; gap:14px; }
+    .colonna { order:-1; }
+    .colonna .sala { max-height:340px; }
+    .sale-area { grid-template-columns:1fr; grid-auto-rows:auto; }
+    .sale-area .lista { overflow:visible; }
+  }
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div id="sync" role="status" aria-live="polite"></div>
 <div id="toast" hidden role="status" aria-live="polite"></div>
 
 <script src="config.js"></script>
@@ -110,9 +135,11 @@ function avviso(t) {
 
 function stato() {
   const el = $('sync'), n = nPending();
-  if (!n) { el.className = ''; el.textContent = '✓ Tutto salvato'; }
-  else if (invio) { el.className = 'att'; el.textContent = '⏳ Salvataggio…'; }
-  else { el.className = 'ko'; el.textContent = '⚠️ ' + n + ' modifiche da inviare: riprovo…'; }
+  if (!el) return;
+  const base = 'pill-sync ';
+  if (!n) { el.className = base; el.textContent = '✓ Tutto salvato'; }
+  else if (invio) { el.className = base + 'att'; el.textContent = '⏳ Salvataggio…'; }
+  else { el.className = base + 'ko'; el.textContent = '⚠️ ' + n + ' da inviare: riprovo…'; }
 }
 
 function programma() { clearTimeout(tm); tm = setTimeout(invia, 600); }
@@ -220,17 +247,19 @@ function gauge(occ, cap) {      // verde 85–100%, arancio sotto, rosso oltre i
     <text x="60" y="52" text-anchor="middle" font-size="22" font-weight="800" fill="${col}">${occ}</text>
     <text x="60" y="67" text-anchor="middle" font-size="9" fill="#667a8c">su ${cap}</text></svg>`;
 }
-const liberi = (cap, occ) => { const l = cap - occ; return `<p class="liberi ${l < 0 ? 'neg' : ''}">${l < 0 ? 'Mancano ' + (-l) + ' posti' : 'Liberi: ' + l}</p>`; };
+const ICONA = '<svg class="ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 10h14v3a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-3zM3 10h2m14 0h2M9 6.5c0-1.2 1-1.2 1-2.5M14 6.5c0-1.2 1-1.2 1-2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const liberi = (cap, occ) => { const l = cap - occ; return `<b class="liberi ${l < 0 ? 'neg' : ''}">${l < 0 ? 'Mancano ' + (-l) + ' posti' : 'Liberi: ' + l}</b>`; };
+const misura = (occ, cap) => `<div class="misura">${gauge(occ, cap)}<div class="mis-testo">${liberi(cap, occ)}<small>${occ} occupati su ${cap}</small></div></div>`;
 
 function chip(r) {
   return `<div class="sq ${sel === r.q ? 'sel' : ''}" data-sq="${esc(r.q)}" style="--c:${colore(r.q)}">
     <span class="maniglia" data-drag="${esc(r.q)}" title="Trascina in un’altra sala" aria-hidden="true">⠿</span>
     <div class="sq-corpo" data-sel="${esc(r.q)}" role="button" tabindex="0" aria-pressed="${sel === r.q}" aria-label="Seleziona la squadra ${esc(r.q)}">
       <b>${esc(r.q)}</b><span class="sq-det">${r.b} bambini · ${r.an - r.cuc} anim.</span></div>
-    ${r.an > 0 ? `<div class="cuc" title="Animatori che mangiano in cucina">🍳
+    <span class="sq-num">${r.posti}</span>
+    ${r.an > 0 ? `<div class="cuc" title="Animatori che mangiano in cucina">${ICONA}
       <button data-cuc="${esc(r.q)}" data-d="-1" aria-label="Un animatore in meno in cucina">−</button><b>${r.cuc}</b>
-      <button data-cuc="${esc(r.q)}" data-d="1" aria-label="Un animatore in più in cucina">+</button></div>` : ''}
-    <span class="sq-num">${r.posti}</span></div>`;
+      <button data-cuc="${esc(r.q)}" data-d="1" aria-label="Un animatore in più in cucina">+</button></div>` : ''}</div>`;
 }
 
 const quiBtn = nome => sel ? `<button class="qui" data-qui="${esc(nome)}">Sposta qui ${esc(sel)}</button>` : '';
@@ -239,30 +268,30 @@ function salaCard(s, C) {
   const occ = C.occ(s.nome), mie = C.righe.filter(r => r.sala === s.nome);
   return `<section class="sala" data-sala="${esc(s.nome)}"><div class="sala-testa"><h2>${esc(s.nome)}</h2>
     <label class="posti">Posti <input type="number" min="0" inputmode="numeric" value="${s.posti}" data-posti="${esc(s.nome)}" aria-label="Posti disponibili in ${esc(s.nome)}"></label></div>
-    ${gauge(occ, s.posti)}${liberi(s.posti, occ)}
-    ${mie.map(chip).join('') || '<p class="vuoto">Trascina qui una squadra</p>'}${quiBtn(s.nome)}</section>`;
+    ${misura(occ, s.posti)}
+    <div class="lista">${mie.map(chip).join('') || '<p class="vuoto">Trascina qui una squadra</p>'}</div>${quiBtn(s.nome)}</section>`;
 }
 
 function render() {
   if (!S) return;
-  const C = calcola(), k = C.k, capK = k ? k.posti : 0;
+  const C = calcola(), k = C.k, capK = k ? k.posti : 0, daAss = C.righe.filter(r => !r.sala);
   const tot = (titolo, occ, cap) => `<div class="tot ${cap - occ < 0 ? 'neg' : ''}"><small>${titolo}</small><b>${occ} / ${cap}</b> <small style="display:inline">${cap - occ < 0 ? 'mancano ' + (occ - cap) : 'liberi ' + (cap - occ)}</small></div>`;
-  const daAss = C.righe.filter(r => !r.sala);
   app.innerHTML = `<header class="testa">
-    <div class="riga1"><h1>Sale pranzo</h1><a href="./">← Presenze</a></div>
+    <div class="riga1"><h1>Sale pranzo</h1>
+      <div class="riepilogo">${tot('Convito', C.domanda, C.capConv)}${k ? tot('Cucina', C.cucTot, capK) : ''}${tot('Totale', C.domanda + C.cucTot, C.capConv + capK)}</div>
+      <span class="spazio"></span><span id="sync" class="pill-sync" role="status" aria-live="polite"></span><a href="./">← Presenze</a></div>
     <div class="barra" role="group" aria-label="Giorno">${GIORNI.map((g, i) => `<button class="pill" data-giorno="${i}" aria-pressed="${i === giorno}">${g}</button>`).join('')}
       ${giorno > 0 ? `<button class="pill sec" data-copia>↺ Copia da ${GIORNI[giorno - 1]}</button>` : ''}<span class="sep"></span>
       <span role="group" aria-label="Cosa contare"><button class="pill" data-modo="presenti" aria-pressed="${modo === 'presenti'}" title="Presenti con pranzo acquistato">Presenti</button>
-      <button class="pill" data-modo="iscritti" aria-pressed="${modo === 'iscritti'}" title="Tutti gli iscritti con pranzo acquistato, anche se non ancora arrivati">Iscritti</button></span></div>
-    <div class="riepilogo">${tot('Convito', C.domanda, C.capConv)}${k ? tot('Cucina', C.cucTot, capK) : ''}${tot('Totale', C.domanda + C.cucTot, C.capConv + capK)}</div></header>
-    <main>${C.sale.map(s => salaCard(s, C)).join('')}
-    ${k ? `<section class="sala cucina"><div class="sala-testa"><h2>🍳 ${esc(k.nome)}</h2>
+      <button class="pill" data-modo="iscritti" aria-pressed="${modo === 'iscritti'}" title="Tutti gli iscritti con pranzo acquistato, anche se non ancora arrivati">Iscritti</button></span></div></header>
+    <div class="corpo"><div class="sale-area">${C.sale.map(sa => salaCard(sa, C)).join('')}
+    ${k ? `<section class="sala cucina"><div class="sala-testa"><h2>${ICONA} ${esc(k.nome)}</h2>
       <label class="posti">Posti <input type="number" min="0" inputmode="numeric" value="${k.posti}" data-posti="${esc(k.nome)}" aria-label="Posti in cucina"></label></div>
-      ${gauge(C.cucTot, capK)}${liberi(capK, C.cucTot)}
-      ${C.righe.filter(r => r.cuc > 0).map(r => `<div class="riga-cuc"><span>${esc(r.q)}</span><span>${r.cuc} animator${r.cuc === 1 ? 'e' : 'i'}</span></div>`).join('') || '<p class="vuoto">Nessun animatore in cucina</p>'}
-      <p class="nota">La cucina si riempie da sola: usa 🍳 − + sulle squadre per scegliere quanti animatori ci mangiano.</p></section>` : ''}
-    <section class="sala" data-sala=""><div class="sala-testa"><h2>Da assegnare</h2><span class="posti">${daAss.reduce((t, r) => t + r.posti, 0)} posti</span></div>
-      ${daAss.map(chip).join('') || '<p class="vuoto">Tutte le squadre hanno una sala ✓</p>'}${quiBtn('')}</section></main>`;
+      ${misura(C.cucTot, capK)}
+      <div class="lista">${C.righe.filter(r => r.cuc > 0).map(r => `<div class="riga-cuc"><span>${esc(r.q)}</span><span>${r.cuc} animator${r.cuc === 1 ? 'e' : 'i'}</span></div>`).join('') || '<p class="vuoto">Nessun animatore in cucina</p>'}</div>
+      <p class="nota">Si riempie da sola: sulle squadre usa − + accanto alla pentola.</p></section>` : ''}</div>
+    <aside class="colonna"><section class="sala" data-sala=""><div class="sala-testa"><h2>Da assegnare</h2><span class="posti">${daAss.reduce((t, r) => t + r.posti, 0)} posti</span></div>
+      <div class="lista">${daAss.map(chip).join('') || '<p class="vuoto">Tutte le squadre hanno una sala ✓</p>'}</div>${quiBtn('')}</section></aside></div>`;
   stato();
 }
 
@@ -276,9 +305,21 @@ function evidenzia(nome) {
 }
 function fineDrag() {
   if (!drag) return;
+  if (drag.raf) cancelAnimationFrame(drag.raf);
   if (drag.ghost) drag.ghost.remove();
   document.querySelectorAll('.fantasma').forEach(e => e.classList.remove('fantasma'));
   evidenzia(null); drag = null;
+}
+
+let ultimoP = { x: 0, y: 0 };
+function autoScroll() {        // se si trascina vicino al bordo, la pagina scorre da sola (serve solo sugli schermi stretti)
+  if (!drag || !drag.mosso) return;
+  const el = document.scrollingElement, bordo = 70;
+  if (el && el.scrollHeight > window.innerHeight + 2) {
+    if (ultimoP.y < bordo) el.scrollTop -= 16 * (bordo - ultimoP.y) / bordo;
+    else if (ultimoP.y > window.innerHeight - bordo) el.scrollTop += 16 * (ultimoP.y - (window.innerHeight - bordo)) / bordo;
+  }
+  drag.raf = requestAnimationFrame(autoScroll);
 }
 
 document.addEventListener('pointerdown', e => {
@@ -289,6 +330,7 @@ document.addEventListener('pointerdown', e => {
 });
 document.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.id) return;
+  ultimoP = { x: e.clientX, y: e.clientY };
   if (!drag.mosso) {
     if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
     const orig = [...document.querySelectorAll('.sq')].find(c => c.dataset.sq === drag.q);
@@ -296,7 +338,7 @@ document.addEventListener('pointermove', e => {
     const r = orig.getBoundingClientRect();
     drag.ghost = orig.cloneNode(true); drag.ghost.classList.add('ghost'); drag.ghost.style.width = r.width + 'px';
     drag.dx = e.clientX - r.left; drag.dy = e.clientY - r.top;
-    document.body.appendChild(drag.ghost); orig.classList.add('fantasma'); drag.mosso = true;
+    document.body.appendChild(drag.ghost); orig.classList.add('fantasma'); drag.mosso = true; drag.raf = requestAnimationFrame(autoScroll);
   }
   drag.ghost.style.left = (e.clientX - drag.dx) + 'px'; drag.ghost.style.top = (e.clientY - drag.dy) + 'px';
   evidenzia(bersaglio(e.clientX, e.clientY));
@@ -308,7 +350,7 @@ document.addEventListener('pointerup', e => {
   fineDrag();
   if (!mosso) return;
   if (t !== null) sposta(q, t);
-  else { render(); if (sulCucina) avviso('La cucina non accetta squadre: usa 🍳 sulla squadra per scegliere gli animatori.'); }
+  else { render(); if (sulCucina) avviso('La cucina non accetta squadre: sulla squadra usa − + accanto alla pentola per scegliere gli animatori.'); }
 });
 document.addEventListener('pointercancel', () => { if (drag) { fineDrag(); render(); } });
 
