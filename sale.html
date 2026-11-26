@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sale pranzo</title>
+<style>
+  :root { --bg:#fdf6e9; --ink:#17324d; --tenue:#667a8c; --linea:#eadfcb; --mare:#1b8fd6; --acqua:#12b5a6; --sole:#ffc83d; --ok:#22a06b; --no:#e5484d; --ombra:0 8px 22px rgba(23,50,77,.10); }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding-bottom:96px; }
+  button, input { font:inherit; color:inherit; }
+  button:focus-visible, input:focus-visible, [role=button]:focus-visible { outline:3px solid var(--ink); outline-offset:2px; }
+
+  .testa { position:sticky; top:0; z-index:5; background:var(--bg); padding:12px 16px 10px; box-shadow:0 6px 16px rgba(23,50,77,.08); }
+  .riga1 { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .testa h1 { font-size:24px; margin:0; letter-spacing:-.02em; flex:1; }
+  .testa a { color:var(--tenue); font-weight:700; text-decoration:none; }
+  .barra { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 8px; }
+  .pill { border:0; background:#fff; color:var(--ink); padding:9px 15px; border-radius:999px; font-weight:800; box-shadow:var(--ombra); cursor:pointer; }
+  .pill[aria-pressed=true] { background:var(--ink); color:#fff; }
+  .pill.sec { font-weight:600; color:var(--tenue); }
+  .sep { width:1px; align-self:stretch; background:var(--linea); margin:0 4px; }
+  .riepilogo { display:flex; gap:10px; flex-wrap:wrap; }
+  .tot { background:#fff; border-radius:14px; padding:8px 14px; box-shadow:var(--ombra); font-weight:800; }
+  .tot small { display:block; font-weight:600; color:var(--tenue); font-size:12px; }
+  .tot.neg b, .liberi.neg { color:var(--no); }
+
+  main { max-width:1500px; margin:0 auto; padding:16px; display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:16px; align-items:start; }
+  .sala { background:#fff; border-radius:22px; box-shadow:var(--ombra); padding:14px; min-width:0; }
+  .sala.bersaglio { outline:3px dashed var(--mare); background:#f0f9ff; }
+  .sala-testa { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .sala h2 { margin:0; font-size:18px; line-height:1.2; }
+  .posti { display:flex; align-items:center; gap:6px; color:var(--tenue); font-size:14px; font-weight:700; white-space:nowrap; }
+  .posti input { width:74px; padding:8px; border:2px solid var(--linea); border-radius:12px; font-weight:800; text-align:center; background:#fff; }
+  .gauge { display:block; width:190px; max-width:100%; margin:6px auto 0; }
+  .liberi { text-align:center; margin:0 0 6px; font-weight:800; color:var(--tenue); }
+  .vuoto { text-align:center; color:var(--tenue); font-size:14px; padding:14px 0; margin:0; border:2px dashed var(--linea); border-radius:16px; margin-top:8px; }
+  .nota { color:var(--tenue); font-size:13px; margin:8px 0 0; }
+
+  .sq { display:flex; align-items:center; gap:8px; height:66px; padding:0 10px 0 4px; margin-top:8px; border-radius:16px; border-left:8px solid var(--c); background:#fbf7ee; }
+  .sq.sel { box-shadow:0 0 0 3px var(--ink); }
+  .sq.fantasma { opacity:.35; }
+  .sq.ghost { position:fixed; z-index:50; pointer-events:none; opacity:.95; box-shadow:0 14px 30px rgba(0,0,0,.32); margin:0; background:#fff; }
+  .maniglia { width:36px; height:52px; display:flex; align-items:center; justify-content:center; color:var(--tenue); font-size:22px; touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; flex:none; }
+  .sq-corpo { flex:1; min-width:0; cursor:pointer; }
+  .sq-corpo b { display:block; font-size:17px; }
+  .sq-det { display:block; color:var(--tenue); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sq-num { font-size:26px; font-weight:800; min-width:38px; text-align:right; }
+  .cuc { display:flex; align-items:center; gap:3px; font-size:14px; flex:none; }
+  .cuc b { min-width:16px; text-align:center; }
+  .cuc button { width:32px; height:32px; border-radius:50%; border:0; background:var(--ink); color:#fff; font-weight:800; padding:0; cursor:pointer; }
+  button.qui { width:100%; margin-top:10px; padding:12px; border:0; border-radius:14px; background:linear-gradient(135deg,var(--acqua),var(--mare)); color:#fff; font-weight:800; cursor:pointer; }
+  .riga-cuc { display:flex; justify-content:space-between; padding:8px 4px; border-bottom:1px solid var(--linea); font-weight:700; }
+  .riga-cuc:last-of-type { border-bottom:0; }
+  .cucina { background:#fff7e0; }
+
+  #sync { position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:6; max-width:496px; margin:0 auto; text-align:center; font-size:16px; font-weight:800; padding:16px 14px; border-radius:18px; background:var(--ok); color:#fff; box-shadow:0 10px 26px rgba(0,0,0,.22); }
+  #sync.att { background:var(--sole); color:var(--ink); }
+  #sync.ko { background:var(--no); }
+  #toast { position:fixed; left:16px; right:16px; bottom:calc(92px + env(safe-area-inset-bottom)); z-index:12; max-width:488px; margin:0 auto; background:var(--ink); color:#fff; padding:14px; border-radius:16px; text-align:center; font-weight:700; }
+  .centro { max-width:420px; margin:60px auto; padding:0 16px; }
+  .centro input { width:100%; padding:15px; border:2px solid var(--linea); border-radius:16px; margin:8px 0 12px; font-size:17px; }
+  .centro button { width:100%; padding:16px; border:0; border-radius:16px; background:var(--ink); color:#fff; font-weight:800; }
+  .errore { color:var(--no); font-weight:700; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sync" role="status" aria-live="polite"></div>
+<div id="toast" hidden role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script>
+// L'indirizzo della web app Apps Script sta nel file config.js (lo stesso della pagina Presenze)
+const API_URL = typeof API_URL_CONFIG === 'string' ? API_URL_CONFIG : '';
+const GIORNI = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'];
+const $ = id => document.getElementById(id);
+const app = $('app');
+const leggi = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const salva = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+let pin = (() => { try { return localStorage.getItem('pin') || ''; } catch (e) { return ''; } })();   // lo stesso PIN della pagina Presenze
+let S = leggi('sale_dati');                       // {sale, squadre, assegn, cont}
+let giorno = (() => { const s = leggi('sale_giorno'); if (Number.isInteger(s) && s >= 0 && s <= 4) return s; const d = new Date().getDay(); return d >= 1 && d <= 5 ? d - 1 : 0; })();
+let modo = leggi('sale_modo') === 'iscritti' ? 'iscritti' : 'presenti';
+let codaA = leggi('sale_codaA') || {};            // modifiche alle assegnazioni non ancora inviate
+let codaP = leggi('sale_codaP') || {};            // modifiche ai posti non ancora inviate
+let invio = false, sel = '', drag = null, tm = null;
+
+/* ---------- Rete ---------- */
+async function rete(fn, args) {
+  try {
+    const r = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, pin }) });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error);
+    return j.data;
+  } catch (e) {
+    if (e instanceof TypeError || e instanceof SyntaxError) throw new Error('Connessione non riuscita: controlla la rete.');
+    throw e;
+  }
+}
+const nPending = () => Object.keys(codaA).length + Object.keys(codaP).length;
+
+function avviso(t) {
+  const el = $('toast'); el.textContent = t; el.hidden = false;
+  clearTimeout(avviso.t); avviso.t = setTimeout(() => { el.hidden = true; }, 3800);
+}
+
+function stato() {
+  const el = $('sync'), n = nPending();
+  if (!n) { el.className = ''; el.textContent = '✓ Tutto salvato'; }
+  else if (invio) { el.className = 'att'; el.textContent = '⏳ Salvataggio…'; }
+  else { el.className = 'ko'; el.textContent = '⚠️ ' + n + ' modifiche da inviare: riprovo…'; }
+}
+
+function programma() { clearTimeout(tm); tm = setTimeout(invia, 600); }
+
+async function invia() {
+  if (invio || !nPending() || !pin) return;
+  invio = true; stato();
+  const ops = Object.values(codaA), chiaviA = Object.keys(codaA), posti = Object.entries(codaP);
+  try {
+    if (ops.length) await rete('salvaAssegnazioni', [ops]);
+    for (const [nome, p] of posti) await rete('salvaPosti', [nome, p]);
+    chiaviA.forEach((k, i) => { if (codaA[k] === ops[i]) delete codaA[k]; });     // tolgo solo ciò che non è cambiato nel frattempo
+    posti.forEach(([nome, p]) => { if (codaP[nome] === p) delete codaP[nome]; });
+    salva('sale_codaA', codaA); salva('sale_codaP', codaP);
+    invio = false; stato();
+  } catch (e) {
+    invio = false; stato();
+    if (/PIN/.test(e.message)) return pinErrato();
+    return void setTimeout(invia, 5000);
+  }
+  if (nPending()) invia();
+}
+
+async function carica(bloccante) {
+  try {
+    S = await rete('getSale', []);
+    riapplica(); salva('sale_dati', S);
+    const a = document.activeElement;
+    if (!drag && !(a && a.tagName === 'INPUT')) render();
+  } catch (e) {
+    if (/PIN/.test(e.message)) return pinErrato();
+    if (bloccante) app.innerHTML = `<div class="centro"><h1>Qualcosa non va</h1><p class="errore">${esc(e.message)}</p><button id="ripr">Riprova</button></div>`, $('ripr').onclick = avvia;
+  }
+}
+
+/* ---------- Dati e calcoli ---------- */
+function ass(q) { return S.assegn[q] || (S.assegn[q] = { sala: ['', '', '', '', ''], cucina: [0, 0, 0, 0, 0] }); }
+
+function riapplica() {     // rimetto sopra i dati del foglio le modifiche non ancora inviate
+  Object.values(codaA).forEach(o => { const a = ass(o.squadra); a.sala[o.giorno] = o.sala; a.cucina[o.giorno] = o.cucina; });
+  Object.entries(codaP).forEach(([n, p]) => { const s = S.sale.find(x => x.nome === n); if (s) s.posti = p; });
+}
+
+function calcola() {
+  const m = modo, d = giorno, z = [0, 0, 0, 0, 0];
+  const righe = S.squadre.map(q => {
+    const c = S.cont[q] || {};
+    const b = ((m === 'presenti' ? c.pasto_b : c.isc_b) || z)[d];
+    const an = ((m === 'presenti' ? c.pasto_a : c.isc_a) || z)[d];
+    const a = ass(q);
+    const cuc = Math.min(a.cucina[d] || 0, an);
+    const valida = S.sale.some(s => !s.cucina && s.nome === a.sala[d]);
+    return { q, b, an, cuc, sala: valida ? a.sala[d] : '', posti: b + an - cuc };
+  });
+  const sale = S.sale.filter(s => !s.cucina), k = S.sale.find(s => s.cucina) || null;
+  const occ = n => righe.filter(r => r.sala === n).reduce((t, r) => t + r.posti, 0);
+  return { righe, sale, k, occ,
+           domanda: righe.reduce((t, r) => t + r.posti, 0), capConv: sale.reduce((t, s) => t + s.posti, 0),
+           cucTot: righe.reduce((t, r) => t + r.cuc, 0) };
+}
+
+/* ---------- Modifiche (istantanee, salvate in background) ---------- */
+function accoda(q) {
+  const a = ass(q);
+  codaA[q + '|' + giorno] = { squadra: q, giorno, sala: a.sala[giorno], cucina: a.cucina[giorno] };
+  salva('sale_codaA', codaA); salva('sale_dati', S); stato(); programma();
+}
+function sposta(q, sala) { ass(q).sala[giorno] = sala; accoda(q); sel = ''; render(); }
+function cucina(q, delta) {
+  const r = calcola().righe.find(x => x.q === q); if (!r) return;
+  ass(q).cucina[giorno] = Math.max(0, Math.min(r.an, r.cuc + delta));
+  accoda(q); render();
+}
+function impostaPosti(nome, v) {
+  const s = S.sale.find(x => x.nome === nome); if (!s) return;
+  s.posti = Math.max(0, Math.floor(Number(v) || 0));
+  codaP[nome] = s.posti; salva('sale_codaP', codaP); salva('sale_dati', S); stato(); programma(); render();
+}
+function copiaPrecedente() {
+  if (giorno === 0) return;
+  S.squadre.forEach(q => { const a = ass(q); a.sala[giorno] = a.sala[giorno - 1]; a.cucina[giorno] = a.cucina[giorno - 1]; accoda(q); });
+  render(); avviso('Copiate le sale e la cucina da ' + GIORNI[giorno - 1] + '.');
+}
+
+/* ---------- Aspetto ---------- */
+const COLORI = { rossa:'#e5484d', blu:'#2f6fed', verde:'#2fa66a', gialla:'#e6a700', arancione:'#f28c28', viola:'#8e5bd6', rosa:'#ec6fa8', azzurra:'#2bb3e6', marrone:'#8a5a3c', grigia:'#7b8794' };
+const PALETTE = ['#e5484d', '#2f6fed', '#2fa66a', '#e6a700', '#8e5bd6', '#ec6fa8', '#2bb3e6', '#8a5a3c', '#7b8794', '#f28c28'];
+function colore(q) {          // E01… = elementari (verde acqua), M01… = medie (arancio)
+  if (/^E\d/i.test(q)) return '#12a594';
+  if (/^M\d/i.test(q)) return '#f28c28';
+  const t = q.toLowerCase();
+  for (const k in COLORI) if (t.includes(k)) return COLORI[k];
+  let h = 0; for (const ch of q) h = (h * 31 + ch.charCodeAt(0)) % 1000;
+  return PALETTE[h % PALETTE.length];
+}
+
+function gauge(occ, cap) {      // verde 85–100%, arancio sotto, rosso oltre i posti
+  const f = cap > 0 ? occ / cap : (occ > 0 ? 2 : 0);
+  const col = occ > cap ? '#e5484d' : f >= 0.85 ? '#22a06b' : '#f0a30a';
+  const fr = Math.max(0, Math.min(f, 1)), R = 50, cx = 60, cy = 62, a = Math.PI * (1 - fr);
+  const x = cx + R * Math.cos(a), y = cy - R * Math.sin(a);
+  const arco = fr > 0.004 ? `<path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${x.toFixed(2)} ${y.toFixed(2)}" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>` : '';
+  return `<svg viewBox="0 0 120 72" class="gauge" role="img" aria-label="${occ} posti occupati su ${cap}">
+    <path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy}" stroke="#efe6d3" stroke-width="12" fill="none" stroke-linecap="round"/>${arco}
+    <text x="60" y="52" text-anchor="middle" font-size="22" font-weight="800" fill="${col}">${occ}</text>
+    <text x="60" y="67" text-anchor="middle" font-size="9" fill="#667a8c">su ${cap}</text></svg>`;
+}
+const liberi = (cap, occ) => { const l = cap - occ; return `<p class="liberi ${l < 0 ? 'neg' : ''}">${l < 0 ? 'Mancano ' + (-l) + ' posti' : 'Liberi: ' + l}</p>`; };
+
+function chip(r) {
+  return `<div class="sq ${sel === r.q ? 'sel' : ''}" data-sq="${esc(r.q)}" style="--c:${colore(r.q)}">
+    <span class="maniglia" data-drag="${esc(r.q)}" title="Trascina in un’altra sala" aria-hidden="true">⠿</span>
+    <div class="sq-corpo" data-sel="${esc(r.q)}" role="button" tabindex="0" aria-pressed="${sel === r.q}" aria-label="Seleziona la squadra ${esc(r.q)}">
+      <b>${esc(r.q)}</b><span class="sq-det">${r.b} bambini · ${r.an - r.cuc} anim.</span></div>
+    ${r.an > 0 ? `<div class="cuc" title="Animatori che mangiano in cucina">🍳
+      <button data-cuc="${esc(r.q)}" data-d="-1" aria-label="Un animatore in meno in cucina">−</button><b>${r.cuc}</b>
+      <button data-cuc="${esc(r.q)}" data-d="1" aria-label="Un animatore in più in cucina">+</button></div>` : ''}
+    <span class="sq-num">${r.posti}</span></div>`;
+}
+
+const quiBtn = nome => sel ? `<button class="qui" data-qui="${esc(nome)}">Sposta qui ${esc(sel)}</button>` : '';
+
+function salaCard(s, C) {
+  const occ = C.occ(s.nome), mie = C.righe.filter(r => r.sala === s.nome);
+  return `<section class="sala" data-sala="${esc(s.nome)}"><div class="sala-testa"><h2>${esc(s.nome)}</h2>
+    <label class="posti">Posti <input type="number" min="0" inputmode="numeric" value="${s.posti}" data-posti="${esc(s.nome)}" aria-label="Posti disponibili in ${esc(s.nome)}"></label></div>
+    ${gauge(occ, s.posti)}${liberi(s.posti, occ)}
+    ${mie.map(chip).join('') || '<p class="vuoto">Trascina qui una squadra</p>'}${quiBtn(s.nome)}</section>`;
+}
+
+function render() {
+  if (!S) return;
+  const C = calcola(), k = C.k, capK = k ? k.posti : 0;
+  const tot = (titolo, occ, cap) => `<div class="tot ${cap - occ < 0 ? 'neg' : ''}"><small>${titolo}</small><b>${occ} / ${cap}</b> <small style="display:inline">${cap - occ < 0 ? 'mancano ' + (occ - cap) : 'liberi ' + (cap - occ)}</small></div>`;
+  const daAss = C.righe.filter(r => !r.sala);
+  app.innerHTML = `<header class="testa">
+    <div class="riga1"><h1>Sale pranzo</h1><a href="./">← Presenze</a></div>
+    <div class="barra" role="group" aria-label="Giorno">${GIORNI.map((g, i) => `<button class="pill" data-giorno="${i}" aria-pressed="${i === giorno}">${g}</button>`).join('')}
+      ${giorno > 0 ? `<button class="pill sec" data-copia>↺ Copia da ${GIORNI[giorno - 1]}</button>` : ''}<span class="sep"></span>
+      <span role="group" aria-label="Cosa contare"><button class="pill" data-modo="presenti" aria-pressed="${modo === 'presenti'}" title="Presenti con pranzo acquistato">Presenti</button>
+      <button class="pill" data-modo="iscritti" aria-pressed="${modo === 'iscritti'}" title="Tutti gli iscritti con pranzo acquistato, anche se non ancora arrivati">Iscritti</button></span></div>
+    <div class="riepilogo">${tot('Convito', C.domanda, C.capConv)}${k ? tot('Cucina', C.cucTot, capK) : ''}${tot('Totale', C.domanda + C.cucTot, C.capConv + capK)}</div></header>
+    <main>${C.sale.map(s => salaCard(s, C)).join('')}
+    ${k ? `<section class="sala cucina"><div class="sala-testa"><h2>🍳 ${esc(k.nome)}</h2>
+      <label class="posti">Posti <input type="number" min="0" inputmode="numeric" value="${k.posti}" data-posti="${esc(k.nome)}" aria-label="Posti in cucina"></label></div>
+      ${gauge(C.cucTot, capK)}${liberi(capK, C.cucTot)}
+      ${C.righe.filter(r => r.cuc > 0).map(r => `<div class="riga-cuc"><span>${esc(r.q)}</span><span>${r.cuc} animator${r.cuc === 1 ? 'e' : 'i'}</span></div>`).join('') || '<p class="vuoto">Nessun animatore in cucina</p>'}
+      <p class="nota">La cucina si riempie da sola: usa 🍳 − + sulle squadre per scegliere quanti animatori ci mangiano.</p></section>` : ''}
+    <section class="sala" data-sala=""><div class="sala-testa"><h2>Da assegnare</h2><span class="posti">${daAss.reduce((t, r) => t + r.posti, 0)} posti</span></div>
+      ${daAss.map(chip).join('') || '<p class="vuoto">Tutte le squadre hanno una sala ✓</p>'}${quiBtn('')}</section></main>`;
+  stato();
+}
+
+/* ---------- Trascinamento (mouse e dito) ---------- */
+function bersaglio(x, y) {      // nome della sala sotto il puntatore; '' = Da assegnare; null = nessuna sala (cucina compresa)
+  const el = document.elementFromPoint(x, y), s = el && el.closest ? el.closest('[data-sala]') : null;
+  return s ? s.dataset.sala : null;
+}
+function evidenzia(nome) {
+  document.querySelectorAll('.sala').forEach(s => s.classList.toggle('bersaglio', nome !== null && s.hasAttribute('data-sala') && s.dataset.sala === nome));
+}
+function fineDrag() {
+  if (!drag) return;
+  if (drag.ghost) drag.ghost.remove();
+  document.querySelectorAll('.fantasma').forEach(e => e.classList.remove('fantasma'));
+  evidenzia(null); drag = null;
+}
+
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest && e.target.closest('[data-drag]');
+  if (!h) return;
+  drag = { q: h.dataset.drag, id: e.pointerId, x: e.clientX, y: e.clientY, mosso: false, ghost: null, dx: 0, dy: 0 };
+  try { h.setPointerCapture(e.pointerId); } catch (_) {}
+});
+document.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (!drag.mosso) {
+    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    const orig = [...document.querySelectorAll('.sq')].find(c => c.dataset.sq === drag.q);
+    if (!orig) return fineDrag();
+    const r = orig.getBoundingClientRect();
+    drag.ghost = orig.cloneNode(true); drag.ghost.classList.add('ghost'); drag.ghost.style.width = r.width + 'px';
+    drag.dx = e.clientX - r.left; drag.dy = e.clientY - r.top;
+    document.body.appendChild(drag.ghost); orig.classList.add('fantasma'); drag.mosso = true;
+  }
+  drag.ghost.style.left = (e.clientX - drag.dx) + 'px'; drag.ghost.style.top = (e.clientY - drag.dy) + 'px';
+  evidenzia(bersaglio(e.clientX, e.clientY));
+});
+document.addEventListener('pointerup', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const { q, mosso } = drag, t = mosso ? bersaglio(e.clientX, e.clientY) : null;
+  const sulCucina = mosso && (document.elementFromPoint(e.clientX, e.clientY) || { closest: () => null }).closest('.cucina');
+  fineDrag();
+  if (!mosso) return;
+  if (t !== null) sposta(q, t);
+  else { render(); if (sulCucina) avviso('La cucina non accetta squadre: usa 🍳 sulla squadra per scegliere gli animatori.'); }
+});
+document.addEventListener('pointercancel', () => { if (drag) { fineDrag(); render(); } });
+
+/* ---------- Tocchi, tastiera, campi ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest ? e.target : e.target.parentElement;
+  let el;
+  if ((el = t.closest('[data-cuc]'))) return cucina(el.dataset.cuc, Number(el.dataset.d));
+  if ((el = t.closest('[data-qui]'))) return sposta(sel, el.dataset.qui);
+  if ((el = t.closest('[data-sel]'))) { sel = sel === el.dataset.sel ? '' : el.dataset.sel; return render(); }
+  if ((el = t.closest('[data-giorno]'))) { giorno = Number(el.dataset.giorno); salva('sale_giorno', giorno); sel = ''; return render(); }
+  if ((el = t.closest('[data-modo]'))) { modo = el.dataset.modo; salva('sale_modo', modo); return render(); }
+  if (t.closest('[data-copia]')) return copiaPrecedente();
+});
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-sel]')) { e.preventDefault(); e.target.click(); }
+  if (e.key === 'Escape' && sel) { sel = ''; render(); }
+});
+document.addEventListener('change', e => { if (e.target.matches && e.target.matches('[data-posti]')) impostaPosti(e.target.dataset.posti, e.target.value); });
+window.addEventListener('online', invia);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { invia(); if (!nPending()) carica(false); } });
+setInterval(() => { if (pin && S && !drag && !invio && !nPending() && document.visibilityState === 'visible') carica(false); }, 20000);
+
+/* ---------- Avvio ---------- */
+function pinErrato() { pin = ''; try { localStorage.removeItem('pin'); } catch (e) {} schermataPin('PIN errato. Riprova.'); }
+function schermataPin(msg) {
+  app.innerHTML = `<div class="centro"><h1>Sale pranzo</h1><p>Inserisci il PIN degli animatori.</p>${msg ? `<p class="errore">${esc(msg)}</p>` : ''}
+    <input id="pin" type="password" autocomplete="off" placeholder="PIN"><button id="vai">Entra</button></div>`;
+  $('vai').onclick = () => { pin = $('pin').value.trim(); try { localStorage.setItem('pin', pin); } catch (e) {} avvia(); };
+}
+function avvia() {
+  if (!API_URL || API_URL.indexOf('INCOLLA') >= 0) { app.innerHTML = '<div class="centro"><h1>Configurazione</h1><p class="errore">Manca l’indirizzo dello script: va scritto in config.js.</p></div>'; return; }
+  if (!pin) return schermataPin();
+  if (S) { riapplica(); render(); carica(false); } else { app.innerHTML = '<div class="centro"><p>Caricamento…</p></div>'; carica(true); }
+  stato(); invia();
+}
+stato();
+avvia();
+</script>
+</body>
+</html>
